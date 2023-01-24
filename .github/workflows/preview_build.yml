@@ -1,0 +1,72 @@
+# Kinda useless this at this moment since 2211.40000.11.0 is released for Insiders
+# Keeping this file and modifying it in case new WSA Preview builds will get released in the future
+name: WSA Preview Build
+on:
+  workflow_dispatch:
+
+jobs:
+  custbuild:
+    name: Build WSA
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x64]
+        release: [WIF]
+        gapps: [OpenGApps]
+        root: [magisk]
+        compress-format: [zip]
+
+    steps:
+      - name: Checkout ♻️
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies 🧑‍🏭
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y whiptail setools lzip wine patchelf e2fsprogs python3-pip aria2 p7zip-full attr xz-utils unzip cabextract
+          sudo wget -P /usr/local/bin/ https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+          sudo chmod +x /usr/local/bin/winetricks
+          wget -P /home/runner/.cache/winetricks/msxml6/ https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_REF_NAME}/wine/.cache/winetricks/msxml6/msxml6-KB973686-enu-amd64.exe
+          pip list --disable-pip-version-check | grep -E "^requests " >/dev/null 2>&1 || python3 -m pip install requests
+          winetricks list-installed | grep -E "^msxml6" >/dev/null 2>&1 || winetricks msxml6 || abort
+
+      - name: Grant exec permission to script 👑
+        run: chmod +x ./scripts/build.sh
+
+      - name: Add eligible Microsoft identity to the WSA Preview Program 🧙🏻‍♂️
+        env:
+          USER_CODE: ${{ secrets.USER_CODE }}
+        if: env.USER_CODE != null
+        run: |
+          mkdir -p ./download/ >/dev/null 2>&1
+          echo "user_code=$USER_CODE" > ./download/.ms_account
+
+      - name: Download WSA Preview build + VCLibs 14 + UI XAML manually (if no eligible Microsoft identity is set) 🧙🏻‍♂️
+        env:
+          USER_CODE: ${{ secrets.USER_CODE }}
+        if: env.USER_CODE == null
+        run: |
+          wget -P ./download/wsa https://github.com/sn-o-w/WSA-bundle/releases/download/v2211.40000.11.0/MicrosoftCorporationII.WindowsSubsystemForAndroid_2211.40000.11.0_neutral___8wekyb3d8bbwe.7z
+          7z x ./download/wsa/*.7z -o./download/
+          mv ./download/*.Msixbundle ./download/wsa-${{ matrix.release }}.zip
+          rm -rf ./download/wsa
+          wget -P ./download/ https://download.microsoft.com/download/4/7/c/47c6134b-d61f-4024-83bd-b9c9ea951c25/appx/Microsoft.VCLibs.x64.14.00.Desktop.appx
+          wget -P ./download/xaml https://globalcdn.nuget.org/packages/microsoft.ui.xaml.2.8.2.nupkg
+          7z x ./download/xaml/*.nupkg -o./download/xaml/
+          mv ./download/xaml/tools/AppX/x64/Release/*.appx ./download/Microsoft.UI.Xaml_x64.appx
+          rm -rf ./download/xaml
+
+      - name: Build WSA 🏗️
+        id: wsa
+        run: |
+          if [ -f "./download/.ms_account" ]; then
+              ./scripts/build.sh --arch ${{ matrix.arch }} --release-type ${{ matrix.release }} --magisk-ver delta --gapps-brand ${{ matrix.gapps }} --root-sol ${{ matrix.root }} --remove-amazon --compress-format ${{ matrix.compress-format }}
+          else
+              ./scripts/build.sh --arch ${{ matrix.arch }} --release-type ${{ matrix.release }} --magisk-ver delta --gapps-brand ${{ matrix.gapps }} --root-sol ${{ matrix.root }} --remove-amazon --skip-download-wsa --compress-format ${{ matrix.compress-format }}
+          fi
+
+      - name: Upload Artifact 🤌
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.wsa.outputs.artifact }}
+          path: ./output/${{ steps.wsa.outputs.artifact }}.${{ matrix.compress-format }}

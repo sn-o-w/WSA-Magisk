@@ -101,9 +101,9 @@ Gen_Rand_Str() {
 
 default() {
     ARCH=x64
-    RELEASE_TYPE=retail
-    MAGISK_VER=stable
-    GAPPS_BRAND=MindTheGapps
+    RELEASE_TYPE=WIF
+    MAGISK_VER=delta
+    GAPPS_BRAND=OpenGApps
     GAPPS_VARIANT=pico
     ROOT_SOL=magisk
 }
@@ -127,11 +127,7 @@ RELEASE_TYPE_MAP=(
 )
 
 MAGISK_VER_MAP=(
-    "stable"
-    "beta"
-    "canary"
-    "debug"
-    "release"
+    "delta"
 )
 
 GAPPS_BRAND_MAP=(
@@ -767,7 +763,7 @@ echo "Generate info"
 if [[ "$ROOT_SOL" = "none" ]]; then
     name1=""
 elif [ "$ROOT_SOL" = "" ] || [ "$ROOT_SOL" = "magisk" ]; then
-    name1="-with-magisk-$MAGISK_VERSION_NAME($MAGISK_VERSION_CODE)-$MAGISK_VER"
+    name1="-with-magisk-$MAGISK_VERSION_NAME($MAGISK_VERSION_CODE)"
 else
     name1="-with-$ROOT_SOL-$MAGISK_VER"
 fi
@@ -785,7 +781,6 @@ else
         \033[0m"
     fi
 fi
-# artifact_name="WSA-${RELEASE_NAME}${name1}${name2}_${WSA_VER}_${ARCH}_${WSA_REL}"
 artifact_name="WSA_${WSA_VER}_${ARCH}_${WSA_REL}${name1}${name2}"
 if [ "$NOFIX_PROPS" = "yes" ]; then
     artifact_name+="-NoFixProps"

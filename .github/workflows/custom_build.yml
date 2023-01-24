@@ -13,19 +13,19 @@ on:
         description: Release type of WSA. RP means Release Preview, WIS means Insider Slow, WIF means Insider Fas
         required: true
         options: ["retail","RP","WIS","WIF"]
-        default: "retail"
+        default: "WIF"
       magisk-ver:
         type: choice
         description: Magisk version.
         required: true
-        options: ["stable","beta","canary","debug"]
-        default: "stable"
+        options: ["delta"]
+        default: "delta"
       gapps-brand:
         type: choice
         description: GApps brand. none for no integration of GApps
         required: true
         options: ["OpenGApps","MindTheGapps","none"]
-        default: "MindTheGapps"
+        default: "OpenGApps"
       gapps-variant:
         type: choice
         description: GApps variant.
@@ -48,7 +48,7 @@ on:
         description: Compress format.
         required: true
         options: ["zip","7z","xz"]
-        default: "7z"
+        default: "zip"
 
 jobs:
   custbuild:

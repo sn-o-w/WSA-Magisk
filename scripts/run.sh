@@ -55,32 +55,27 @@ ARCH=$(
 
 RELEASE_TYPE=$(
     Radiolist '([title]="WSA release type"
-                [default]="retail")' \
+                [default]="insider fast")' \
         \
-        'retail' "Stable Channel" 'on' \
+        'retail' "Stable Channel" 'off' \
         'release preview' "Release Preview Channel" 'off' \
         'insider slow' "Beta Channel" 'off' \
-        'insider fast' "Dev Channel" 'off'
+        'insider fast' "Dev Channel" 'on'
 )
 
 if [ -z "${CUSTOM_MAGISK+x}" ]; then
     MAGISK_VER=$(
         Radiolist '([title]="Magisk version"
-                        [default]="stable")' \
+                        [default]="delta")' \
             \
-            'stable' "Stable Channel" 'on' \
-            'beta' "Beta Channel" 'off' \
-            'canary' "Canary Channel" 'off' \
-            'debug' "Canary Channel Debug Build" 'off'
+            'delta' "Delta Version by HuskyDG" 'on'
     )
-else
-    MAGISK_VER=debug
 fi
 
 if (YesNoBox '([title]="Install GApps" [text]="Do you want to install GApps?")'); then
     GAPPS_BRAND=$(
         Radiolist '([title]="Which GApps do you want to install?"
-                 [default]="MindTheGapps")' \
+                 [default]="OpenGApps")' \
             \
             'OpenGApps' "This flavor may cause startup failure" 'off' \
             'MindTheGapps' "Recommend" 'on'
@@ -134,10 +129,10 @@ fi
 if [ "$COMPRESS_OUTPUT" = "--compress" ]; then
     COMPRESS_FORMAT=$(
         Radiolist '([title]="Compress format"
-                        [default]="7z")' \
+                        [default]="zip")' \
             \
-            'zip' "Zip" 'off' \
-            '7z' "7-Zip" 'on' \
+            'zip' "Zip" 'on' \
+            '7z' "7-Zip" 'off' \
             'xz' "tar.xz" 'off'
         )
 fi
