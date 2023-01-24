@@ -96,7 +96,7 @@ abort() {
 trap abort INT TERM
 
 Gen_Rand_Str() {
-    head /dev/urandom | tr -dc '[:lower:]' | head -c"$1"
+    haveged -n $((${1:-32}*512)) --file - 2>/dev/null | tr -dc '[:lower:]' | head -c"$1"
 }
 
 default() {
@@ -785,6 +785,7 @@ else
         \033[0m"
     fi
 fi
+# artifact_name="WSA-${RELEASE_NAME}${name1}${name2}_${WSA_VER}_${ARCH}_${WSA_REL}"
 artifact_name="WSA_${WSA_VER}_${ARCH}_${WSA_REL}${name1}${name2}"
 if [ "$NOFIX_PROPS" = "yes" ]; then
     artifact_name+="-NoFixProps"
@@ -793,6 +794,7 @@ if [ "$REMOVE_AMAZON" = "yes" ]; then
     artifact_name+="-RemovedAmazon"
 fi
 echo "$artifact_name"
+echo "artifact=$(echo "$artifact_name")" >> $GITHUB_OUTPUT
 echo -e "\nFinishing building...."
 if [ -f "$OUTPUT_DIR" ]; then
     $SUDO rm -rf "${OUTPUT_DIR:?}"
