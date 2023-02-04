@@ -551,6 +551,8 @@ if [ "$ROOT_SOL" = 'magisk' ] || [ "$ROOT_SOL" = '' ]; then
     $SUDO chmod 0700 "$MOUNT_DIR"/sbin
     $SUDO cp "$WORK_DIR"/magisk/magisk/* "$MOUNT_DIR"/sbin/
     $SUDO cp "$MAGISK_PATH" "$MOUNT_DIR"/sbin/magisk.apk
+    $SUDO cp ./bin/overlayfs_system "$MOUNT_DIR"/sbin/overlayfs_system
+    $SUDO chmod 755 "$MOUNT_DIR"/sbin/overlayfs_system
     $SUDO tee -a "$MOUNT_DIR"/sbin/loadpolicy.sh <<EOF >/dev/null
 #!/system/bin/sh
 mkdir -p /data/adb/magisk
@@ -578,8 +580,9 @@ EOF
     LS_SVC_NAME=$(Gen_Rand_Str 12)
     $SUDO tee -a "$MOUNT_DIR"/system/etc/init/hw/init.rc <<EOF >/dev/null
 on post-fs-data
-    start adbd
     mkdir /dev/$TMP_PATH
+    mkdir /data/overlay
+    exec u:r:magisk:s0 root root -- /sbin/overlayfs_system /data/overlay
     mount tmpfs tmpfs /dev/$TMP_PATH mode=0755
     copy /sbin/magisk64 /dev/$TMP_PATH/magisk64
     chmod 0755 /dev/$TMP_PATH/magisk64
