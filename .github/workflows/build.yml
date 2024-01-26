@@ -1,7 +1,7 @@
 name: Build WSA Magisk
 on:
   schedule:
-    - cron: "30 2 1 * *"
+    - cron: "0 13 * * *"
   push:
     branches: [main]
   workflow_dispatch:
@@ -18,12 +18,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [x64, arm64]
-        release: [retail]
-        gapps: [MindTheGapps, none]
-        root: [magisk, none]
-        magisk-ver: [stable]
-        compress-format: [7z]
+        arch: [x64]
+        release: [WIF]
+        gapps: [MindTheGapps]
+        root: [magisk]
+        magisk-ver: [delta]
+        compress-format: [zip]
+        preview-program-builds: [yes]
 
     steps:
       - name: Checkout
@@ -53,13 +54,24 @@ jobs:
                python3 -m pip install -r scripts/requirements.txt || abort "Failed to install python3 dependencies"
           }
           deactivate
+          if [[ "${{ matrix.preview-program-builds }}" == "yes" ]]; then
+            mkdir -p ./download/ >/dev/null 2>&1
+            # wget --progress=bar:force:noscroll -O ./download/wsa-${{ matrix.release }}.zip $(wget -q -O - https://api.github.com/repos/MustardChef/WSAPackages/releases/latest | jq -r '.assets[] | .browser_download_url')
+            # tag=$(wget -q -O - "https://api.github.com/repos/MustardChef/WSAPackages/tags" | jq -r '.[0].name'); wget --progress=bar:force:noscroll -O ./download/wsa-${{ matrix.release }}.zip "https://github.com/MustardChef/WSAPackages/releases/download/${tag}/MicrosoftCorporationII.WindowsSubsystemForAndroid_${tag#WSA_}_neutral_._8wekyb3d8bbwe.Msixbundle"
+            tag=$(wget -q -O - "https://api.github.com/repos/bubbles-wow/WSA-Archive/tags" | jq -r '.[0].name'); wget --progress=bar:force:noscroll -O ./download/wsa-${{ matrix.release }}.zip "https://github.com/bubbles-wow/WSA-Archive/releases/download/${tag}/MicrosoftCorporationII.WindowsSubsystemForAndroid_${tag}_neutral_._8wekyb3d8bbwe.Msixbundle"
+          fi
 
       - name: Grant executable permission
         run: chmod +x ./scripts/build.sh
 
       - name: Build WSA GAPPS ${{ matrix.root }} ${{ matrix.arch }}
         id: wsa
-        run: ./scripts/build.sh --arch ${{ matrix.arch }} --release-type ${{ matrix.release }} --gapps-brand ${{ matrix.gapps }} --root-sol ${{ matrix.root }} --magisk-ver ${{ matrix.magisk-ver }} --remove-amazon --compress-format ${{ matrix.compress-format }}
+        run: |
+          if [[ "${{ matrix.preview-program-builds }}" == "yes" ]]; then
+            ./scripts/build.sh --arch ${{ matrix.arch }} --release-type ${{ matrix.release }} --gapps-brand ${{ matrix.gapps }} --root-sol ${{ matrix.root }} --magisk-ver ${{ matrix.magisk-ver }} --remove-amazon --skip-download-wsa --compress-format ${{ matrix.compress-format }}
+          else
+            ./scripts/build.sh --arch ${{ matrix.arch }} --release-type ${{ matrix.release }} --gapps-brand ${{ matrix.gapps }} --root-sol ${{ matrix.root }} --magisk-ver ${{ matrix.magisk-ver }} --remove-amazon --compress-format ${{ matrix.compress-format }}
+          fi
 
       - name: Prepare release tag
         id: date
