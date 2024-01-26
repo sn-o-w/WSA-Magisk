@@ -1,0 +1,75 @@
+name: Build WSA Magisk
+on:
+  schedule:
+    - cron: "30 2 1 * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+  repository_dispatch:
+    types: [build]
+
+concurrency: 
+  group: ${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build WSA
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x64, arm64]
+        release: [retail]
+        gapps: [MindTheGapps, none]
+        root: [magisk, none]
+        magisk-ver: [stable]
+        compress-format: [7z]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: lzip patchelf e2fsprogs python3 python3-pip aria2 p7zip-full attr unzip sudo whiptail qemu-utils
+          version: 1.0
+
+      - name: Install Python venv & its libraries
+        run: |
+          python3 -c "import venv" >/dev/null 2>&1 || {
+              if ! (sudo apt-get install "python3-venv"); then
+                  abort
+              fi
+          }
+          echo "Creating python3 virtual env"
+          python3 -m venv --system-site-packages "$(dirname "$PWD")/python3-env" || {
+               echo "Failed to upgrade python3 virtual env, clear and recreate"
+               python3 -m venv --clear --system-site-packages "$(dirname "$PWD")/python3-env" || abort "Failed to create python3 virtual env"
+          }
+          source "$(dirname "$PWD")/python3-env/bin/activate" || abort "Failed to activate python3 virtual env"
+          python3 -c "import pkg_resources; pkg_resources.require(open('scripts/requirements.txt',mode='r'))" &>/dev/null || {
+               echo "Installing Python3 dependencies"
+               python3 -m pip install -r scripts/requirements.txt || abort "Failed to install python3 dependencies"
+          }
+          deactivate
+
+      - name: Grant executable permission
+        run: chmod +x ./scripts/build.sh
+
+      - name: Build WSA GAPPS ${{ matrix.root }} ${{ matrix.arch }}
+        id: wsa
+        run: ./scripts/build.sh --arch ${{ matrix.arch }} --release-type ${{ matrix.release }} --gapps-brand ${{ matrix.gapps }} --root-sol ${{ matrix.root }} --magisk-ver ${{ matrix.magisk-ver }} --remove-amazon --compress-format ${{ matrix.compress-format }}
+
+      - name: Prepare release tag
+        id: date
+        run: echo "date=$(date +'v%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Upload build to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./output/${{ steps.wsa.outputs.artifact }}.${{ matrix.compress-format }}
+          tag: ${{ steps.date.outputs.date }}
+          overwrite: true
+          file_glob: true

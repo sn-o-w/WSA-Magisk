@@ -1,6 +1,11 @@
 # Magisk on WSA (with Google Apps)
 
-:warning: For fork developers: Please don't build using GitHub Actions, as GitHub will count your forked GitHub Actions usage against this upstream repository, which may cause this upstream repository gets disabled by GitHub staff like [MagiskOnWSA](https://github.com/LSPosed/MagiskOnWSA) because of numerous forks building GitHub Actions, and counting the forks' Action usage against this upstream repository.
+> ## Grab the latest release from [releases](https://github.com/creative-builds/WSA-Magisk/releases/latest).
+>
+> - Extract the package and execute `run.bat`.
+> - Ask your queries in [discussion](https://github.com/creative-builds/WSA-Magisk/discussions).
+
+:warning: For fork developers: Please don't build using GitHub Actions, as GitHub will count your forked GitHub Actions usage against this upstream repository, which may cause this upstream repository gets disabled by GitHub staff like [MagiskOnWSA](https://github.com/creative-builds/WSA-Magisk) because of numerous forks building GitHub Actions, and counting the forks' Action usage against this upstream repository.
 
 ## Support for generating from these systems
 
@@ -56,7 +61,7 @@
 2. Clone the repo to local:
 
    ```bash
-   git clone https://github.com/LSPosed/MagiskOnWSALocal.git --depth 1
+   git clone https://github.com/creative-builds/WSA-Magisk.git --depth 1
    ```
 
 3. Run `cd MagiskOnWSALocal`.
@@ -169,6 +174,7 @@
 
 ## Credits
 
+- [Upstream Repository](https://github.com/LSPosed/MagiskOnWSALocal): MagiskOnWSALocal by LSPosed
 - [StoreLib](https://github.com/StoreDev/StoreLib): API for downloading WSA
 - [Magisk](https://github.com/topjohnwu/Magisk): The most famous root solution on Android
 - [The Open GApps Project](https://opengapps.org): One of the most famous Google Apps packages solution
