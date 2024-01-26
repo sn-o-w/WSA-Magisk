@@ -129,12 +129,12 @@ Gen_Rand_Str() {
 }
 
 default() {
-    ARCH=x64
-    RELEASE_TYPE=retail
-    MAGISK_VER=stable
-    GAPPS_BRAND=MindTheGapps
-    GAPPS_VARIANT=pico
-    ROOT_SOL=magisk
+    ARCH="x64"
+    RELEASE_TYPE="WIF"
+    MAGISK_VER="delta"
+    GAPPS_BRAND="MindTheGapps"
+    GAPPS_VARIANT="pico"
+    ROOT_SOL="magisk"
 }
 
 exit_with_message() {
@@ -252,6 +252,8 @@ MAGISK_VER_MAP=(
     "canary"
     "debug"
     "release"
+    "delta"
+    "alpha"
 )
 
 GAPPS_BRAND_MAP=(
@@ -496,7 +498,7 @@ update_ksu_zip_name() {
       "2306") KERNEL_VER="5.15.104.1";;
       "2307") KERNEL_VER="5.15.104.2";;
       "2308") KERNEL_VER="5.15.104.3";;
-      "2309") KERNEL_VER="5.15.104.4";;
+      "2309"|"2310"|"2311") KERNEL_VER="5.15.104.4";;
       *) abort "KernelSU is not supported in this WSA version: $WSA_MAJOR_VER"
     esac
     KERNELSU_ZIP_NAME=kernelsu-$ARCH-$KERNEL_VER.zip
@@ -974,7 +976,7 @@ echo "Generate info"
 if [[ "$ROOT_SOL" = "none" ]]; then
     name1=""
 elif [ "$ROOT_SOL" = "magisk" ]; then
-    name1="-with-magisk-$MAGISK_VERSION_NAME($MAGISK_VERSION_CODE)-$MAGISK_VER"
+    name1="-with-magisk-$MAGISK_VERSION_NAME($MAGISK_VERSION_CODE)"
 elif [ "$ROOT_SOL" = "kernelsu" ]; then
     name1="-with-$ROOT_SOL-$KERNELSU_VER"
 fi
@@ -1010,26 +1012,16 @@ if [ ! -d "$OUTPUT_DIR" ]; then
     mkdir -p "$OUTPUT_DIR"
 fi
 OUTPUT_PATH="${OUTPUT_DIR:?}/$artifact_name"
-if [ "$COMPRESS_OUTPUT" ] || [ -n "$COMPRESS_FORMAT" ]; then
+if [ -n "$COMPRESS_FORMAT" ]; then
     mv "$WORK_DIR/wsa/$ARCH" "$WORK_DIR/wsa/$artifact_name"
-    if [ -z "$COMPRESS_FORMAT" ]; then
-        COMPRESS_FORMAT="7z"
-    fi
-    if [ -n "$COMPRESS_FORMAT" ]; then
-        FILE_EXT=".$COMPRESS_FORMAT"
-        OUTPUT_PATH="$OUTPUT_PATH$FILE_EXT"
-    fi
-    rm -f "${OUTPUT_PATH:?}" || abort
+    OUTPUT_PATH="$OUTPUT_PATH.$COMPRESS_FORMAT"
     if [ "$COMPRESS_FORMAT" = "7z" ]; then
-        echo "Compressing with 7z"
-        7z a "${OUTPUT_PATH:?}" "$WORK_DIR/wsa/$artifact_name" || abort
+        echo "Compressing with 7z..."
+        7z -t7z a -mx=6 -mmt=8 "${OUTPUT_PATH:?}" "$WORK_DIR/wsa/$artifact_name" || abort
     elif [ "$COMPRESS_FORMAT" = "zip" ]; then
-        echo "Compressing with zip"
-        7z -tzip a "$OUTPUT_PATH" "$WORK_DIR/wsa/$artifact_name" || abort
+        echo "Compressing with zip..."
+        7z -tzip a -mx=6 -mmt=8 "$OUTPUT_PATH" "$WORK_DIR/wsa/$artifact_name" || abort
     fi
-else
-    rm -rf "${OUTPUT_PATH:?}" || abort
-    cp -r "$WORK_DIR/wsa/$ARCH" "$OUTPUT_PATH" || abort
 fi
 echo -e "done\n"
 

@@ -1,9 +1,8 @@
 # Magisk on WSA (with Google Apps)
 
-> ## Grab the latest release from [releases](https://github.com/creative-builds/WSA-Magisk/releases/latest).
+> ## Grab the latest release from [releases](https://github.com/sn-o-w/WSA-Magisk/releases/latest).
 >
 > - Extract the package and execute `run.bat`.
-> - Ask your queries in [discussion](https://github.com/creative-builds/WSA-Magisk/discussions).
 
 :warning: For fork developers: Please don't build using GitHub Actions, as GitHub will count your forked GitHub Actions usage against this upstream repository, which may cause this upstream repository gets disabled by GitHub staff like [MagiskOnWSA](https://github.com/creative-builds/WSA-Magisk) because of numerous forks building GitHub Actions, and counting the forks' Action usage against this upstream repository.
 
@@ -178,8 +177,8 @@
 - [StoreLib](https://github.com/StoreDev/StoreLib): API for downloading WSA
 - [Magisk](https://github.com/topjohnwu/Magisk): The most famous root solution on Android
 - [The Open GApps Project](https://opengapps.org): One of the most famous Google Apps packages solution
-- [WSA-Kernel-SU](https://github.com/LSPosed/WSA-Kernel-SU) and [kernel-assisted-superuser](https://git.zx2c4.com/kernel-assisted-superuser/): The kernel `su` for debugging Magisk Integration
-- [WSAGAScript](https://github.com/ADeltaX/WSAGAScript): The first GApps integration script for WSA
+- [WSA-Kernel-SU](https://github.com/tiann/KernelSU): A Kernel based root solution for Android(https://git.zx2c4.com/kernel-assisted-superuser/): The kernel `su` for debugging Magisk Integration
+- [Kernel Assisted Superuser](https://git.zx2c4.com/kernel-assisted-superuser): Kernel assisted means of gaining a root shell for Android
 - [erofs-utils](https://github.com/sekaiacg/erofs-utils): Pre-build `erofs-utils` with erofsfuse enabled
 
 _The repository is provided as a utility._
