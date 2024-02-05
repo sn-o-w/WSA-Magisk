@@ -46,6 +46,7 @@
 - Keep each build up to date
 - Support both ARM64 and x64
 - Support MindTheGapps
+- Support LiteGapps
 - Remove Amazon Appstore
 - Fix VPN dialog not showing (use our [VpnDialogs app](https://github.com/LSPosed/VpnDialogs))
 - Add device administration feature
@@ -69,10 +70,12 @@
 6. Select the version of Magisk.
 7. Choose which brand of GApps you want to install:
    - MindTheGapps
+   - LiteGapps
 
-     There is no other variant we can choose.
+     There is no other variant we can choose from MindTheGapps.
+     At this time of writing this, for Android 13, x86-64 architecture, there are `core` and `lite` variants from LiteGapps.
 8. Select the root solution (none means no root).
-9. If you are running the script for the first time, it will take some time to complete. After the script completes, two new folders named `output` and `download` will be generated in the `MagiskOnWSALocal` folder. Go to the `output` folder. While running the `./run.sh` script in the step 3, if you selected `Yes` for `Do you want to compress the output?` then in `output` folder you will see a compressed file called `WSA-with-magisk-stable-MindTheGapps_2207.40000.8.0_x64_Release-Nightly`or else there will be folder with the `WSA-with-magisk-stable-MindTheGapps_2207.40000.8.0_x64_Release-Nightly`. If there is a folder open it and skip to step 10. NOTE: The name of compressed file or the folder generated in the `output` folder may be different for you. It will be dependent on the choices made when executing `./run.sh`.
+9. If you are running the script for the first time, it will take some time to complete. After the script completes, two new folders named `output` and `download` will be generated in the `MagiskOnWSALocal` folder. Go to the `output` folder. While running the `./run.sh` script in the step 3, if you selected `Yes` for `Do you want to compress the output?` then in `output` folder you will see a compressed file called `WSA-with-magisk-stable-MindTheGapps_2207.40000.8.0_x64_Release-Nightly` or else there will be folder with the `WSA-with-magisk-stable-MindTheGapps_2207.40000.8.0_x64_Release-Nightly`. If there is a folder open it and skip to step 10. NOTE: The name of compressed file or the folder generated in the `output` folder may be different for you. It will be dependent on the choices made when executing `./run.sh`.
 10. Extract the compressed file and open the folder created after the extraction of the file.
 11. Here look for file `Run.bat` and run it.
     - If you previously have a MagiskOnWSA installation, it will automatically uninstall the previous one while **preserving all user data** and install the new one, so don't worry about your data.
@@ -155,13 +158,17 @@
 
   Or you can download the built package for 12.1 and 13 for x86_64 from [this page](https://sourceforge.net/projects/wsa-mtg/files/x86_64/).
 
-- Can I switch OpenGApps to MindTheGapps and keep user data in a previous build?
+- Where can I download LiteGapps?
+
+  You can download from here [LiteGapps](https://litegapps.github.io).
+
+- Can I switch OpenGApps to MindTheGapps or LiteGapps and keep user data in a previous build?
 
   No. You should wipe data after changing the GApps brand. Otherwise, you will find that the installed GApps are not recognized.
 
 - WSA with OpenGApps integrated fails to start.
 
-  OpenGApps has not yet released a version built for Android 12L and 13, only built for Android 11, which may not be compatible and thus cause crashes. Consider switching to MindTheGapps.
+  OpenGApps has not yet released a version built for Android 12L and 13, only built for Android 11, which may not be compatible and thus cause crashes. Consider switching to MindTheGapps or LiteGapps.
 
 - How to install KernelSU?
 
