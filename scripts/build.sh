@@ -654,7 +654,25 @@ if [ "$GAPPS_BRAND" != 'none' ]; then
                 echo "No modules folder found inside LiteGapps zip package, moving on..."
             fi
             sudo sed -e '/NOTIFY_PENDING_SYSTEM_UPDATE/i \        <permission name="android.permission.MODIFY_DEFAULT_AUDIO_EFFECTS" />' -i "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
-            sudo sed -e '/com.google.android.pixel.setupwizard/a \        <permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE" />' -i "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
+            # sudo sed -e '/com.google.android.pixel.setupwizard/a \        <permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE" />' -i "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
+			
+# Check if the original lines exist in the LiteGapps permissions XML file
+if grep -Fxq '    <privapp-permissions package="com.google.android.pixel.setupwizard">' "$litegapps_permissions_file" &&
+    grep -Fxq '        <permission name="android.permission.CHANGE_CONFIGURATION" />' "$litegapps_permissions_file" &&
+    grep -Fxq '        <permission name="android.permission.GET_ACCOUNTS_PRIVILEGED" />' "$litegapps_permissions_file"; then
+
+    # Make the necessary modifications
+    sed -i '/    <privapp-permissions package="com.google.android.pixel.setupwizard">/ {
+        /        <permission name="android.permission.CHANGE_CONFIGURATION"\/>/!b
+        n
+        /        <permission name="android.permission.GET_ACCOUNTS_PRIVILEGED" \/>/a\
+            \        <permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE" \/>
+    }' "$litegapps_permissions_file"
+
+    echo "[Snow] Modifications successfully applied to $litegapps_permissions_file."
+else
+    echo "[Snow] Original lines not found in $litegapps_permissions_file."
+fi
         else
             if ! unzip "$GAPPS_PATH" "system/*" -x "system/addon.d/*" "system/product/priv-app/VelvetTitan/*" "system/system_ext/priv-app/SetupWizard/*" -d "$WORK_DIR/gapps"; then
                 CLEAN_DOWNLOAD_GAPPS=1
