@@ -656,6 +656,8 @@ if [ "$GAPPS_BRAND" != 'none' ]; then
             sudo sed -e '/NOTIFY_PENDING_SYSTEM_UPDATE/i \        <permission name="android.permission.MODIFY_DEFAULT_AUDIO_EFFECTS" />' -i "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
             # sudo sed -e '/com.google.android.pixel.setupwizard/a \        <permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE" />' -i "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
 			
+litegapps_permissions_file="$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
+			
 # Check if the original lines exist in the LiteGapps permissions XML file
 if grep -Fxq '    <privapp-permissions package="com.google.android.pixel.setupwizard">' "$litegapps_permissions_file" &&
     grep -Fxq '        <permission name="android.permission.CHANGE_CONFIGURATION" />' "$litegapps_permissions_file" &&
