@@ -655,13 +655,8 @@ if grep -zoP '(?s)<privapp-permissions package="com.google.android.pixel.setupwi
     ! grep -q '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE"/>' && \
     grep -q '<permission name="android.permission.GET_ACCOUNTS_PRIVILEGED"/>'; then
 
-    # Use awk to process the XML and insert the missing permission
-    awk -v RS="</privapp-permissions>" -v ORS="</privapp-permissions>" \
-        '/<privapp-permissions package="com.google.android.pixel.setupwizard">/ && \
-         /<permission name="android.permission.CHANGE_CONFIGURATION"\/>/{print $0 "        <permission name=\"android.permission.DISPATCH_PROVISIONING_MESSAGE\"/>"}' \
-        "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml" > tmpfile && mv tmpfile "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml"
-
-    echo "[Snow] Modifications successfully applied to litegapps-permissions.xml"
+    awk '/<privapp-permissions package="com.google.android.pixel.setupwizard">/ {print; getline; if ($0 ~ /<permission name="android.permission.CHANGE_CONFIGURATION"\/>/) {print; print "        <permission name=\"android.permission.DISPATCH_PROVISIONING_MESSAGE\"/>"; next;} } 1' "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml" > temp_file && mv temp_file "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml"
+    echo "[Snow] Modifications successfully applied to privapp-permissions-google-se.xml"
 fi
 
                 rm -rf "$WORK_DIR/litegapps-modules/"
@@ -678,12 +673,7 @@ if grep -zoP '(?s)<privapp-permissions package="com.google.android.pixel.setupwi
     ! grep -q '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE" />' && \
     grep -q '<permission name="android.permission.GET_ACCOUNTS_PRIVILEGED" />'; then
 
-    # Use awk to process the XML and insert the missing permission
-    awk -v RS="</privapp-permissions>" -v ORS="</privapp-permissions>" \
-        '/<privapp-permissions package="com.google.android.pixel.setupwizard">/ && \
-         /<permission name="android.permission.CHANGE_CONFIGURATION" \/>/{print $0 "        <permission name=\"android.permission.DISPATCH_PROVISIONING_MESSAGE\" />"}' \
-        "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml" > tmpfile && mv tmpfile "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
-
+    awk '/<privapp-permissions package="com.google.android.pixel.setupwizard">/ {print; getline; if ($0 ~ /<permission name="android.permission.CHANGE_CONFIGURATION" \/>/) {print; print "        <permission name=\"android.permission.DISPATCH_PROVISIONING_MESSAGE\" />"; next;} } 1' "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml" > temp_file && mv temp_file "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
     echo "[Snow] Modifications successfully applied to litegapps-permissions.xml"
 fi
         else
