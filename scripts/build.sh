@@ -648,9 +648,7 @@ if [ "$GAPPS_BRAND" != 'none' ]; then
                     unzip -o "$module_zip" 'system/*' -d "$WORK_DIR/litegapps-modules"
                     rsync -a "$WORK_DIR/litegapps-modules/system/" "$WORK_DIR/gapps/"
                 done
-                if grep -zoP '(?s)<privapp-permissions package="com.google.android.pixel.setupwizard">.*?</privapp-permissions>' "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml" | \
-                    grep -qv '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE"/>'; then
-
+                if grep -zoP '(?s)<privapp-permissions package="com.google.android.pixel.setupwizard">.*?</privapp-permissions>' "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml" | grep -qv '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE"/>'; then
                     awk '/<privapp-permissions package="com.google.android.pixel.setupwizard">/ {print; getline; if ($0 ~ /<permission name="android.permission.CHANGE_CONFIGURATION"\/>/) {print; print "        <permission name=\"android.permission.DISPATCH_PROVISIONING_MESSAGE\"/>"; next;} } 1' "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml" > temp_file && mv temp_file "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml"
                 fi
                 rm -rf "$WORK_DIR/litegapps-modules/"
@@ -660,9 +658,7 @@ if [ "$GAPPS_BRAND" != 'none' ]; then
             if ! grep -q '<permission name="android.permission.MODIFY_DEFAULT_AUDIO_EFFECTS" />' "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"; then
                 sudo sed -e '/NOTIFY_PENDING_SYSTEM_UPDATE/i \        <permission name="android.permission.MODIFY_DEFAULT_AUDIO_EFFECTS" />' -i "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
             fi
-            if grep -zoP '(?s)<privapp-permissions package="com.google.android.pixel.setupwizard">.*?</privapp-permissions>' "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml" | \
-                grep -qv '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE" />'; then
-
+            if grep -zoP '(?s)<privapp-permissions package="com.google.android.pixel.setupwizard">.*?</privapp-permissions>' "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml" | grep -qv '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE />'; then
                 awk '/<privapp-permissions package="com.google.android.pixel.setupwizard">/ {print; getline; if ($0 ~ /<permission name="android.permission.CHANGE_CONFIGURATION" \/>/) {print; print "        <permission name=\"android.permission.DISPATCH_PROVISIONING_MESSAGE\" />"; next;} } 1' "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml" > temp_file && mv temp_file "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
             fi
         else
