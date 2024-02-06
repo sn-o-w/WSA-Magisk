@@ -643,9 +643,7 @@ if [ "$GAPPS_BRAND" != 'none' ]; then
             if unzip -l "$GAPPS_PATH" | grep -q "modules/"; then
                 for module_zip in $(unzip -l "$GAPPS_PATH" | awk '/modules\/.*\.zip/ && !/_PixelLauncher|_MarkupGoogle|_SetupWizard/ { print $4 }'); do
                     unzip -j -o "$GAPPS_PATH" "$module_zip" -d "$WORK_DIR/litegapps-modules"
-                done
-                for module_zip in "$WORK_DIR/litegapps-modules"/*.zip; do
-                    unzip -o "$module_zip" 'system/*' -d "$WORK_DIR/litegapps-modules"
+                    unzip -o "$WORK_DIR/litegapps-modules/$module_zip" 'system/*' -d "$WORK_DIR/litegapps-modules"
                     rsync -a "$WORK_DIR/litegapps-modules/system/" "$WORK_DIR/gapps/"
                 done
                 if grep -zoP '(?s)<privapp-permissions package="com.google.android.pixel.setupwizard">.*?</privapp-permissions>' "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml" | grep -qv '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE"/>'; then
