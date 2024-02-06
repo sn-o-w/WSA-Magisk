@@ -654,13 +654,14 @@ if grep -zoP '(?s)<privapp-permissions package="com.google.android.pixel.setupwi
     grep -q '<permission name="android.permission.CHANGE_CONFIGURATION"/>' && \
     ! grep -q '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE"/>' && \
     grep -q '<permission name="android.permission.GET_ACCOUNTS_PRIVILEGED"/>'; then
-    sudo sed -e '/<privapp-permissions package="com.google.android.pixel.setupwizard">/ {
-        /<permission name="android.permission.CHANGE_CONFIGURATION"\/>/!b
-        n
-        /<permission name="android.permission.GET_ACCOUNTS_PRIVILEGED"\/>/!a\
-            <permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE"\/>
-    }' -i "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml"
-    echo "[Snow] Modifications successfully applied to privapp-permissions-google-se.xml"
+
+    # Use awk to process the XML and insert the missing permission
+    awk -v RS="</privapp-permissions>" -v ORS="</privapp-permissions>" \
+        '/<privapp-permissions package="com.google.android.pixel.setupwizard">/ && \
+         /<permission name="android.permission.CHANGE_CONFIGURATION"\/>/{print $0 "        <permission name=\"android.permission.DISPATCH_PROVISIONING_MESSAGE\"/>"}' \
+        "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml" > tmpfile && mv tmpfile "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml"
+
+    echo "[Snow] Modifications successfully applied to litegapps-permissions.xml"
 fi
 
                 rm -rf "$WORK_DIR/litegapps-modules/"
@@ -672,16 +673,17 @@ fi
             fi
             # sudo sed -e '/com.google.android.pixel.setupwizard/a \        <permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE" />' -i "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
 
-if grep -zoP '(?s)<privapp-permissions package="com.google.android.pixel.setupwizard">.*?</privapp-permissions>' "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml" &&
+if grep -zoP '(?s)<privapp-permissions package="com.google.android.pixel.setupwizard">.*?</privapp-permissions>' "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml" | \
     grep -q '<permission name="android.permission.CHANGE_CONFIGURATION" />' && \
     ! grep -q '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE" />' && \
     grep -q '<permission name="android.permission.GET_ACCOUNTS_PRIVILEGED" />'; then
-    sudo sed -e '/<privapp-permissions package="com.google.android.pixel.setupwizard">/ {
-        /<permission name="android.permission.CHANGE_CONFIGURATION" \/>/!b
-        n
-        /<permission name="android.permission.GET_ACCOUNTS_PRIVILEGED" \/>/!a\
-            <permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE" \/>
-    }' -i "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
+
+    # Use awk to process the XML and insert the missing permission
+    awk -v RS="</privapp-permissions>" -v ORS="</privapp-permissions>" \
+        '/<privapp-permissions package="com.google.android.pixel.setupwizard">/ && \
+         /<permission name="android.permission.CHANGE_CONFIGURATION" \/>/{print $0 "        <permission name=\"android.permission.DISPATCH_PROVISIONING_MESSAGE\" />"}' \
+        "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml" > tmpfile && mv tmpfile "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
+
     echo "[Snow] Modifications successfully applied to litegapps-permissions.xml"
 fi
         else
