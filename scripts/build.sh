@@ -651,7 +651,7 @@ if [ "$GAPPS_BRAND" != 'none' ]; then
                 # sudo sed -e '/com.google.android.pixel.setupwizard/a \        <permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE"/>' -i "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml"
 
 if grep -zoP '(?s)<privapp-permissions package="com.google.android.pixel.setupwizard">.*?</privapp-permissions>' "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml" | \
-    ! grep -q '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE"/>'; then
+    grep -qv '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE"/>'; then
 
     awk '/<privapp-permissions package="com.google.android.pixel.setupwizard">/ {print; getline; if ($0 ~ /<permission name="android.permission.CHANGE_CONFIGURATION"\/>/) {print; print "        <permission name=\"android.permission.DISPATCH_PROVISIONING_MESSAGE\"/>"; next;} } 1' "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml" > temp_file && mv temp_file "$WORK_DIR/gapps/system_ext/etc/permissions/privapp-permissions-google-se.xml"
     echo "[Snow] Modifications successfully applied to privapp-permissions-google-se.xml"
@@ -667,7 +667,7 @@ fi
             # sudo sed -e '/com.google.android.pixel.setupwizard/a \        <permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE" />' -i "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
 
 if grep -zoP '(?s)<privapp-permissions package="com.google.android.pixel.setupwizard">.*?</privapp-permissions>' "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml" | \
-    ! grep -q '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE" />'; then
+    grep -qv '<permission name="android.permission.DISPATCH_PROVISIONING_MESSAGE" />'; then
 
     awk '/<privapp-permissions package="com.google.android.pixel.setupwizard">/ {print; getline; if ($0 ~ /<permission name="android.permission.CHANGE_CONFIGURATION" \/>/) {print; print "        <permission name=\"android.permission.DISPATCH_PROVISIONING_MESSAGE\" />"; next;} } 1' "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml" > temp_file && mv temp_file "$WORK_DIR/gapps/product/etc/permissions/litegapps-permissions.xml"
     echo "[Snow] Modifications successfully applied to litegapps-permissions.xml"
