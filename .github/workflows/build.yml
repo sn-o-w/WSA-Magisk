@@ -20,7 +20,8 @@ jobs:
       matrix:
         arch: [x64]
         release: [WIF]
-        gapps: [MindTheGapps]
+        gapps: [LiteGapps]
+        gapps-variant: [core]
         root: [magisk]
         magisk-ver: [delta]
         compress-format: [zip]
@@ -68,9 +69,9 @@ jobs:
         id: wsa
         run: |
           if [[ "${{ matrix.preview-program-builds }}" == "yes" ]]; then
-            ./scripts/build.sh --arch ${{ matrix.arch }} --release-type ${{ matrix.release }} --gapps-brand ${{ matrix.gapps }} --root-sol ${{ matrix.root }} --magisk-ver ${{ matrix.magisk-ver }} --remove-amazon --skip-download-wsa --compress-format ${{ matrix.compress-format }}
+            ./scripts/build.sh --arch ${{ matrix.arch }} --release-type ${{ matrix.release }} --gapps-brand ${{ matrix.gapps }} --gapps-variant ${{ matrix.gapps-variant }} --root-sol ${{ matrix.root }} --magisk-ver ${{ matrix.magisk-ver }} --remove-amazon --skip-download-wsa --compress-format ${{ matrix.compress-format }}
           else
-            ./scripts/build.sh --arch ${{ matrix.arch }} --release-type ${{ matrix.release }} --gapps-brand ${{ matrix.gapps }} --root-sol ${{ matrix.root }} --magisk-ver ${{ matrix.magisk-ver }} --remove-amazon --compress-format ${{ matrix.compress-format }}
+            ./scripts/build.sh --arch ${{ matrix.arch }} --release-type ${{ matrix.release }} --gapps-brand ${{ matrix.gapps }} --gapps-variant ${{ matrix.gapps-variant }} --root-sol ${{ matrix.root }} --magisk-ver ${{ matrix.magisk-ver }} --remove-amazon --compress-format ${{ matrix.compress-format }}
           fi
 
       - name: Prepare release tag
