@@ -23,7 +23,7 @@ jobs:
         gapps: [LiteGapps]
         gapps-variant: [core]
         root: [magisk]
-        magisk-ver: [delta]
+        magisk-ver: [canary]
         compress-format: [zip]
         preview-program-builds: [yes]
 
