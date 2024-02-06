@@ -643,7 +643,7 @@ if [ "$GAPPS_BRAND" != 'none' ]; then
             if unzip -l "$GAPPS_PATH" | grep -q "modules/"; then
                 for module_zip in $(unzip -l "$GAPPS_PATH" | awk '/modules\/.*\.zip/ && !/_MarkupGoogle|_PixelLauncher|_PixelSetupWizard|_SetupWizard/ { print $4 }'); do
                     unzip -j -o "$GAPPS_PATH" "$module_zip" -d "$WORK_DIR/litegapps-modules"
-                    unzip -o "$WORK_DIR/litegapps-modules/$module_zip" 'system/*' -d "$WORK_DIR/litegapps-modules"
+                    unzip -o "$WORK_DIR/litegapps-modules/$(basename "$module_zip")" 'system/*' -d "$WORK_DIR/litegapps-modules"
                     rsync -a "$WORK_DIR/litegapps-modules/system/" "$WORK_DIR/gapps/"
                 done
                 rm -rf "$WORK_DIR/litegapps-modules/"
