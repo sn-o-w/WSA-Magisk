@@ -19,14 +19,14 @@ on:
         type: choice
         description: GApps brand. none for no integration of GApps
         required: true
-        options: ["OpenGApps","MindTheGapps","none"]
-        default: "MindTheGapps"
+        options: ["OpenGApps","MindTheGapps","LiteGapps","none"]
+        default: "LiteGapps"
       gapps-variant:
         type: choice
         description: GApps variant.
         required: true
-        options: ["super","stock","full","mini","micro","nano","pico","tvstock","tvmini"]
-        default: "pico"
+        options: ["super (OpenGApps)","stock (OpenGApps)","full (OpenGApps)","mini (OpenGApps)","micro (OpenGApps/LiteGapps)","nano (OpenGApps/LiteGapps)","pico (OpenGApps)","tvstock (OpenGApps)","tvmini (OpenGApps)","core (LiteGapps)","lite (LiteGapps)"]
+        default: "core (LiteGapps)"
       root-sol:
         type: choice
         description: Root solution. none means no root.
@@ -38,7 +38,7 @@ on:
         description: Magisk version.
         required: true
         options: ["stable","beta","canary","debug","delta","alpha"]
-        default: "delta"
+        default: "canary"
 #       remove-amazon:
 #         description: Remove Amazon Appstore from the system
 #         required: true
@@ -124,13 +124,30 @@ jobs:
       - name: Build WSA 🏗️
         id: wsa
         run: |
+          gapps_favour="${{ inputs.gapps-variant }}"
+          gapps_favour="${gapps_favour%% (*}"
+          if [[ "${{ inputs.gapps-brand }}" == "OpenGApps" ]]; then
+            if [[ "$gapps_favour" != "super" && "$gapps_favour" != "stock" && "$gapps_favour" != "full" && "$gapps_favour" != "mini" && "$gapps_favour" != "micro" && "$gapps_favour" != "nano" && "$gapps_favour" != "pico" && "$gapps_favour" != "tvstock" && "$gapps_favour" != "tvmini" ]]; then
+              gapps_variant="--gapps-variant pico"
+            else
+              gapps_variant="--gapps-variant $gapps_favour"
+            fi
+          elif [[ "${{ inputs.gapps-brand }}" == "LiteGapps" ]]; then
+            if [[ "$gapps_favour" != "pixel" && "$gapps_favour" != "micro" && "$gapps_favour" != "nano" && "$gapps_favour" != "basic" && "$gapps_favour" != "user" && "$gapps_favour" != "go" && "$gapps_favour" != "core" && "$gapps_favour" != "lite" ]]; then
+              gapps_variant="--gapps-variant lite"
+            else
+              gapps_variant="--gapps-variant $gapps_favour"
+            fi
+          else
+            gapps_variant=""
+          fi
           if [[ "${{ inputs.release-type }}" != "PP" ]]; then
-            ./scripts/build.sh --arch ${{ inputs.arch }} --release-type ${{ inputs.release-type }} --gapps-brand ${{ inputs.gapps-brand }} --gapps-variant ${{ inputs.gapps-variant }} --root-sol ${{ inputs.root-sol }} --magisk-ver ${{ inputs.magisk-ver }} --remove-amazon --compress-format ${{ inputs.compress-format }}
+            ./scripts/build.sh --arch ${{ inputs.arch }} --release-type ${{ inputs.release-type }} --gapps-brand ${{ inputs.gapps-brand }} $gapps_variant --root-sol ${{ inputs.root-sol }} --magisk-ver ${{ inputs.magisk-ver }} --remove-amazon --compress-format ${{ inputs.compress-format }}
           else
             if [ -f "./download/.ms_account" ]; then
-              ./scripts/build.sh --arch ${{ inputs.arch }} --release-type WIF --gapps-brand ${{ inputs.gapps-brand }} --gapps-variant ${{ inputs.gapps-variant }} --root-sol ${{ inputs.root-sol }} --magisk-ver ${{ inputs.magisk-ver }} --remove-amazon --compress-format ${{ inputs.compress-format }}
+              ./scripts/build.sh --arch ${{ inputs.arch }} --release-type WIF --gapps-brand ${{ inputs.gapps-brand }} $gapps_variant --root-sol ${{ inputs.root-sol }} --magisk-ver ${{ inputs.magisk-ver }} --remove-amazon --compress-format ${{ inputs.compress-format }}
             else
-              ./scripts/build.sh --arch ${{ inputs.arch }} --release-type WIF --gapps-brand ${{ inputs.gapps-brand }} --gapps-variant ${{ inputs.gapps-variant }} --root-sol ${{ inputs.root-sol }} --magisk-ver ${{ inputs.magisk-ver }} --remove-amazon --skip-download-wsa --compress-format ${{ inputs.compress-format }}
+              ./scripts/build.sh --arch ${{ inputs.arch }} --release-type WIF --gapps-brand ${{ inputs.gapps-brand }} $gapps_variant --root-sol ${{ inputs.root-sol }} --magisk-ver ${{ inputs.magisk-ver }} --remove-amazon --skip-download-wsa --compress-format ${{ inputs.compress-format }}
             fi
           fi
 
